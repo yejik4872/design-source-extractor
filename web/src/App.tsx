@@ -15,6 +15,8 @@ export default function App() {
   const [settings, setSettings] = useState<Settings>({
     mode: "general",
     split: true,
+    upscaleParts: true,
+    upscaleScale: 4,
     tolerance: 32,
   });
   const [results, setResults] = useState<ProcessResult[]>([]);
@@ -30,6 +32,8 @@ export default function App() {
         const res = await processImage(file, {
           mode: settings.mode,
           split: settings.split,
+          upscaleParts: settings.upscaleParts,
+          upscaleScale: settings.upscaleScale,
           tolerance: settings.tolerance,
           onProgress: (stage, ratio) =>
             setStatus({
