@@ -3,6 +3,7 @@ import type { Mode } from "../lib/pipeline";
 export interface Settings {
   mode: Mode;
   split: boolean;
+  upscaleParts: boolean;
   tolerance: number;
 }
 
@@ -46,6 +47,18 @@ export default function Controls({ settings, onChange, disabled }: Props) {
         />
         <span>요소 분리</span>
       </label>
+
+      {settings.mode === "general" && (
+        <label className="control-group checkbox">
+          <input
+            type="checkbox"
+            checked={settings.upscaleParts}
+            onChange={(e) => set({ upscaleParts: e.target.checked })}
+            disabled={disabled || !settings.split}
+          />
+          <span>요소 고화질 (AI 4x)</span>
+        </label>
+      )}
 
       {settings.mode === "pixel" && (
         <div className="control-group">
