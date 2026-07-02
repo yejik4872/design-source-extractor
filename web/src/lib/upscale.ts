@@ -3,18 +3,28 @@
 // 투명 픽셀의 RGB(보통 검정)가 가장자리로 번지는 할로를 막기 위해
 // 업스케일 전에 불투명 픽셀의 색을 투명 영역으로 번지게(bleed) 한다.
 import Upscaler from "upscaler";
+import x2 from "@upscalerjs/esrgan-medium/2x";
+import x3 from "@upscalerjs/esrgan-medium/3x";
 import x4 from "@upscalerjs/esrgan-medium/4x";
 import { loadImage } from "./canvas";
 
-let upscaler: InstanceType<typeof Upscaler> | null = null;
-function getUpscaler(): InstanceType<typeof Upscaler> {
-  if (!upscaler) upscaler = new Upscaler({ model: x4 });
-  return upscaler;
+export type UpscaleScale = 2 | 3 | 4;
+
+const MODELS = { 2: x2, 3: x3, 4: x4 } as const;
+
+// 배율별로 업스케일러 인스턴스를 캐시 (모델 가중치는 최초 사용 시 로드)
+const upscalers = new Map<UpscaleScale, InstanceType<typeof Upscaler>>();
+function getUpscaler(scale: UpscaleScale): InstanceType<typeof Upscaler> {
+  let u = upscalers.get(scale);
+  if (!u) {
+    u = new Upscaler({ model: MODELS[scale] });
+    upscalers.set(scale, u);
+  }
+  return u;
 }
 
 /** 이 크기(긴 변)보다 큰 요소는 이미 충분히 크다고 보고 AI 업스케일을 생략 */
 export const MAX_SOURCE_EDGE = 1200;
-export const SCALE = 4;
 
 /** 불투명 픽셀의 색을 투명 이웃으로 번지게 해 가장자리 검정 할로를 방지 */
 function bleedEdges(
@@ -75,11 +85,12 @@ function toCanvas(imageData: ImageData): HTMLCanvasElement {
 }
 
 /**
- * ImageData를 4배 업스케일한다 (RGB=ESRGAN, 알파=고품질 리샘플).
+ * ImageData를 지정 배율로 업스케일한다 (RGB=ESRGAN, 알파=고품질 리샘플).
  * 원본이 이미 충분히 크면(MAX_SOURCE_EDGE 초과) 원본을 그대로 반환한다.
  */
 export async function upscaleImageData(
   src: ImageData,
+  scale: UpscaleScale = 4,
   onProgress?: (ratio: number) => void
 ): Promise<{ imageData: ImageData; upscaled: boolean }> {
   const W = src.width;
@@ -94,14 +105,14 @@ export async function upscaleImageData(
   const rgbCanvas = toCanvas(new ImageData(bled, W, H));
 
   // 2) ESRGAN으로 RGB 업스케일 (patch 단위로 처리해 UI 프리즈 방지)
-  const resultSrc = await getUpscaler().execute(rgbCanvas, {
+  const resultSrc = await getUpscaler(scale).execute(rgbCanvas, {
     patchSize: 64,
     padding: 2,
     progress: (rate: number) => onProgress?.(rate),
   });
   const upImg = await loadImage(resultSrc);
-  const OW = W * SCALE;
-  const OH = H * SCALE;
+  const OW = W * scale;
+  const OH = H * scale;
 
   const outCanvas = document.createElement("canvas");
   outCanvas.width = OW;

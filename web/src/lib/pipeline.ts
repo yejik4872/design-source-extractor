@@ -11,7 +11,8 @@ export type Mode = "general" | "pixel";
 export interface ProcessOptions {
   mode: Mode;
   split?: boolean;
-  upscaleParts?: boolean; // 일반 모드: 분리된 요소를 AI 4x 업스케일
+  upscaleParts?: boolean; // 일반 모드: 분리된 요소를 AI 업스케일
+  upscaleScale?: 2 | 3 | 4; // 업스케일 배율 (기본 4)
   tolerance?: number; // 픽셀 모드
   forceColorKey?: boolean; // 픽셀 모드
   splitOptions?: SplitOptions;
@@ -76,10 +77,11 @@ export async function processImage(
       // TF.js가 무거워서 업스케일을 실제 사용할 때만 동적 로드 (코드 스플리팅)
       opts.onProgress?.("업스케일 모델 로딩");
       const { upscaleImageData } = await import("./upscale");
-      // 요소별 AI 4x 업스케일 (요소는 작아서 전체 이미지보다 훨씬 빠름)
+      const scale = opts.upscaleScale ?? 4;
+      // 요소별 AI 업스케일 (요소는 작아서 전체 이미지보다 훨씬 빠름)
       for (let i = 0; i < partData.length; i++) {
         opts.onProgress?.(`요소 업스케일 ${i + 1}/${partData.length}`, 0);
-        const res = await upscaleImageData(partData[i].imageData, (r) =>
+        const res = await upscaleImageData(partData[i].imageData, scale, (r) =>
           opts.onProgress?.(`요소 업스케일 ${i + 1}/${partData.length}`, r)
         );
         partData[i] = {
@@ -94,7 +96,8 @@ export async function processImage(
     parts = await Promise.all(partData.map((p) => toResult(p.imageData)));
   }
 
-  if (upscaledCount > 0) method += ` + AI 4x 업스케일 (${upscaledCount}개)`;
+  if (upscaledCount > 0)
+    method += ` + AI ${opts.upscaleScale ?? 4}x 업스케일 (${upscaledCount}개)`;
 
   const fullResult = await toResult(full);
   return { name, method, full: fullResult, parts };

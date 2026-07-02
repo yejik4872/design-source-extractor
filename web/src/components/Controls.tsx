@@ -4,8 +4,11 @@ export interface Settings {
   mode: Mode;
   split: boolean;
   upscaleParts: boolean;
+  upscaleScale: 2 | 3 | 4;
   tolerance: number;
 }
+
+const SCALES = [2, 3, 4] as const;
 
 interface Props {
   settings: Settings;
@@ -56,8 +59,26 @@ export default function Controls({ settings, onChange, disabled }: Props) {
             onChange={(e) => set({ upscaleParts: e.target.checked })}
             disabled={disabled || !settings.split}
           />
-          <span>요소 고화질 (AI 4x)</span>
+          <span>요소 고화질 (AI)</span>
         </label>
+      )}
+
+      {settings.mode === "general" && settings.upscaleParts && settings.split && (
+        <div className="control-group">
+          <span className="control-label">배율</span>
+          <div className="seg">
+            {SCALES.map((s) => (
+              <button
+                key={s}
+                className={settings.upscaleScale === s ? "active" : ""}
+                onClick={() => set({ upscaleScale: s })}
+                disabled={disabled}
+              >
+                {s}x
+              </button>
+            ))}
+          </div>
+        </div>
       )}
 
       {settings.mode === "pixel" && (
