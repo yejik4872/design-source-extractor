@@ -1,0 +1,45 @@
+:root {
+  --bg: #0f1115;
+  --surface: #1a1d23;
+  --surface-2: #12151a;
+  --border: #2a2e36;
+  --border-strong: #3a3f4a;
+  --text: #e6e8eb;
+  --text-dim: #9aa0a6;
+  --accent: #5b9dff;
+  --accent-strong: #3b82f6;
+  --danger: #ef4444;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", "Malgun Gothic", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* 투명 배경 표시용 체커보드 */
+.checker {
+  background-image: linear-gradient(45deg, #2a2e36 25%, transparent 25%),
+    linear-gradient(-45deg, #2a2e36 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #2a2e36 75%),
+    linear-gradient(-45deg, transparent 75%, #2a2e36 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+}
