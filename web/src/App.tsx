@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Dropzone from "./components/Dropzone";
 import Controls, { type Settings } from "./components/Controls";
+import PromptGuide from "./components/PromptGuide";
 import ResultCard from "./components/ResultCard";
 import { processImage, revokeResult, type ProcessResult } from "./lib/pipeline";
 import "./App.css";
@@ -66,6 +67,8 @@ export default function App() {
       </header>
 
       <Controls settings={settings} onChange={setSettings} disabled={status.busy} />
+
+      <PromptGuide mode={settings.mode} />
 
       <Dropzone onFiles={handleFiles} disabled={status.busy} />
 
