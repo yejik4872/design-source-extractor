@@ -107,7 +107,7 @@ export async function upscaleImageData(
   // 2) ESRGAN으로 RGB 업스케일 (patch 단위로 처리해 UI 프리즈 방지)
   const resultSrc = await getUpscaler(scale).execute(rgbCanvas, {
     patchSize: 64,
-    padding: 2,
+    padding: 4, // 패치 경계 이음새 아티팩트 완화
     progress: (rate: number) => onProgress?.(rate),
   });
   const upImg = await loadImage(resultSrc);
@@ -131,8 +131,17 @@ export async function upscaleImageData(
   alphaCtx.drawImage(toCanvas(src), 0, 0, OW, OH);
   const alphaData = alphaCtx.getImageData(0, 0, OW, OH).data;
 
-  // 4) 합성: RGB는 모델 출력, 알파는 리샘플 결과
-  for (let i = 0; i < OW * OH; i++) out.data[i * 4 + 3] = alphaData[i * 4 + 3];
+  // 4) 합성 + 알파 경계 하드닝(defringe).
+  //    리샘플로 반투명 띠가 배율만큼 넓어지고, 그 사이로 모델 노이즈가 비쳐
+  //    테두리가 지저분해진다 → 낮은 알파는 제거하고 중간 구간을 좁혀 정리.
+  //    (그림자 같은 넓은 반투명 영역은 선형 스트레치라 대체로 유지됨)
+  const LO = 32; // 이하 = 완전 투명 (프린지 찌꺼기 제거)
+  const HI = 224; // 이상 = 완전 불투명
+  for (let i = 0; i < OW * OH; i++) {
+    const a = alphaData[i * 4 + 3];
+    out.data[i * 4 + 3] =
+      a <= LO ? 0 : a >= HI ? 255 : Math.round(((a - LO) * 255) / (HI - LO));
+  }
 
   return { imageData: out, upscaled: true };
 }
