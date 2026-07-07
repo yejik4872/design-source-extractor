@@ -1,8 +1,10 @@
-# 🎨 Design Source Extractor
+# ✂️ Design Source Extractor
 
 AI 생성 이미지·픽셀아트의 **배경을 제거**하고 **요소별로 분리**해, 피그마 작업에 쓸
 투명 PNG 소스로 뽑아내는 도구. **모든 처리가 브라우저(또는 로컬 CLI)에서 수행되어
 이미지가 외부로 전송되지 않습니다.**
+
+**🔗 라이브 데모: [design-source-extractor.vercel.app](https://design-source-extractor.vercel.app/)**
 
 ## 구성 (모노레포)
 
