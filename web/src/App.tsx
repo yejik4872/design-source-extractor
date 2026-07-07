@@ -63,10 +63,18 @@ export default function App() {
   return (
     <div className="app">
       <header className="app-head">
-        <h1>🎨 Design Source Extractor</h1>
+        <span className="badge">
+          <span className="badge-dot" />
+          100% 브라우저 처리 · 서버 전송 없음
+        </span>
+        <h1>
+          배경은 지우고,
+          <br />
+          소스만 <span className="hl">싹둑</span>
+        </h1>
         <p>
           AI 생성 이미지·픽셀아트의 배경을 제거하고 요소별로 분리합니다.
-          <b> 전부 브라우저에서 처리되어 이미지가 서버로 전송되지 않습니다.</b>
+          모든 처리가 브라우저 안에서 끝나 이미지가 어디로도 전송되지 않아요.
         </p>
       </header>
 

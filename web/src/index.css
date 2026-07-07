@@ -1,15 +1,23 @@
 :root {
-  --bg: #0f1115;
-  --surface: #1a1d23;
-  --surface-2: #12151a;
-  --border: #2a2e36;
-  --border-strong: #3a3f4a;
-  --text: #e6e8eb;
-  --text-dim: #9aa0a6;
-  --accent: #5b9dff;
-  --accent-strong: #3b82f6;
-  --danger: #ef4444;
-  color-scheme: dark;
+  --bg: #faf5ec;
+  --paper: #ffffff;
+  --ink: #1c1814;
+  --text: #1c1814;
+  --text-dim: #7a7164;
+  --coral: #ff5a3c;
+  --yellow: #ffc838;
+  --teal: #12b5a4;
+  --purple: #7c5cff;
+  --pink: #ff7ac3;
+  --accent: var(--coral);
+  --line: 2px solid var(--ink);
+  --shadow-sm: 3px 3px 0 var(--ink);
+  --shadow-md: 5px 5px 0 var(--ink);
+  --shadow-lg: 7px 7px 0 var(--ink);
+  --radius-lg: 22px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
+  color-scheme: light;
 }
 
 * {
@@ -25,8 +33,28 @@ body {
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: system-ui, -apple-system, "Segoe UI", "Malgun Gothic", sans-serif;
+  font-family: "Pretendard Variable", Pretendard, system-ui, -apple-system,
+    "Segoe UI", "Malgun Gothic", sans-serif;
   -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* 종이 그레인 텍스처 */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.35;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.06 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+#root {
+  position: relative;
+  z-index: 1;
 }
 
 button {
@@ -34,12 +62,18 @@ button {
   cursor: pointer;
 }
 
+::selection {
+  background: var(--yellow);
+  color: var(--ink);
+}
+
 /* 투명 배경 표시용 체커보드 */
 .checker {
-  background-image: linear-gradient(45deg, #2a2e36 25%, transparent 25%),
-    linear-gradient(-45deg, #2a2e36 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, #2a2e36 75%),
-    linear-gradient(-45deg, transparent 75%, #2a2e36 75%);
+  background-image: linear-gradient(45deg, #eae3d6 25%, transparent 25%),
+    linear-gradient(-45deg, #eae3d6 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #eae3d6 75%),
+    linear-gradient(-45deg, transparent 75%, #eae3d6 75%);
   background-size: 16px 16px;
   background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+  background-color: #f7f3ea;
 }

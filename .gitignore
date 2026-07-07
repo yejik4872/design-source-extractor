@@ -18,3 +18,8 @@ cli/input/*
 .DS_Store
 Thumbs.db
 .vscode/
+
+# local tooling
+.claude/
+.omc/
+web/.omc/
